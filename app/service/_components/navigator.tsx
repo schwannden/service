@@ -14,6 +14,7 @@ export default function Navigator() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const onPersonalPage = pathname === '/service' && !!searchParams.get('user')
+
   return (
     <div className="flex h-16 items-center justify-center space-x-5 border-b bg-gray-200 p-3">
       <SyncButton />
@@ -26,6 +27,10 @@ export default function Navigator() {
       )}
       <Button asChild>
         <Link href="/service"> 看總表 </Link>
+      </Button>
+      <Button variant="destructive" asChild>
+        {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+        <a href="/api/auth/logout">登出</a>
       </Button>
     </div>
   )
