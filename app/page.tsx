@@ -1,10 +1,20 @@
+'use client'
+
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
+import { useUser } from '@auth0/nextjs-auth0/client'
 import { Button } from '@/components/ui/button'
+import Loading from './loading'
 
 /** 目前首頁捨棄，將直接轉址至服事表 */
 export default function Page() {
-  redirect('/service')
+  // if auth0 is authenticated, redirect to /service
+  const { user, isLoading } = useUser()
+  if (isLoading) return <Loading />
+  if (user) {
+    redirect('/service')
+  }
+
   return (
     <div className="bg-whitesmoke flex h-screen w-screen flex-col justify-center">
       <div className="mb-3">
@@ -17,7 +27,7 @@ export default function Page() {
         <div className="flex flex-col items-center space-y-3 p-3">
           <div className="flex items-center">
             <Button asChild>
-              <Link href={'/dashboard'}>進入服事表</Link>
+              <Link href={'/api/auth/login'}>登入</Link>
             </Button>
           </div>
         </div>
