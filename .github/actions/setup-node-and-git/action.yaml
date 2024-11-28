@@ -1,0 +1,21 @@
+name: checkout-and-setup-python
+description: 'Checkout the repository and setup Python'
+inputs:
+  NODE_VERSION:
+    description: 'Node version to use'
+    required: false
+    default: '20'
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ inputs.NODE_VERSION }}
+    - name: Git check
+      run: |
+        git config --global user.email "service.wlchurch.org.tw@github.actions"
+        git config --global user.name "Git Action"
+        git --version
+        git config --list
+      shell: bash

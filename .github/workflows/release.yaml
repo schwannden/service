@@ -1,26 +1,39 @@
-name: Release New Version
-
+name: Generate changelog and bump the version
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
+    inputs:
+      releaseType:
+        description: 'What kind of release is this?'
+        required: true
+        type: choice
+        options:
+          - 'major'
+          - 'minor'
+          - 'patch'
 
 jobs:
-  build-and-deploy:
+  version:
+    permissions:
+      id-token: write
+      pull-requests: read
+      contents: write
     runs-on: ubuntu-latest
-    outputs:
-      release_version: ${{ steps.get_version.outputs.version }}
     steps:
       - uses: actions/checkout@v4
-      - name: Get version from package.json
-        id: get_version
-        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
-      - name: build
-        uses: ./.github/actions/build
+        name: Checkout the repository
         with:
-          SENTRY_RELEASE: ${{ steps.get_version.outputs.version }}
-          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-          GOOGLE_PRIVATE_KEY: ${{ secrets.GOOGLE_PRIVATE_KEY }}
-      - name: deploy to Google App Engine
-        uses: ./.github/actions/release
-        with:
-          SA_JSON: ${{ secrets.SA_JSON }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node and Git
+        uses: ./.github/actions/setup-node-and-git
+
+      - name: Generate the changelog
+        id: generate-changelog
+        run: |
+          echo "test"
+
+      - name: Bump version
+        shell: bash
+        run: |
+          npm version ${{github.event.inputs.releaseType}}
